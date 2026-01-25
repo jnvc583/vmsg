@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>vmsg</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div id="root">
+        <menu>
+            <h1 style="margin-left: 20px;">vmsg</h1>
+        </menu>
+        <main class="page">
+            <div class="content">
+                <h1>vmsg示例</h1>
+                <p>这个示例演示如何使用模块，模块会自动注入默认样式，用户无需提供样式表。</p>
+                <div class="buttons">
+                    <button id="open-basic" class="btn">打开基本弹窗</button>
+                    <button id="open-mac" class="btn">打开 Mac 式弹窗（可拖拽）</button>
+                    <button id="open-mac-form" class="btn">打开 Mac 式表单弹窗</button>
+                </div>
+                <h1>使用方法：</h1>
+                <p>首先，导入模块：</p>
+                <pre><code lang="js">import Modal from 'https://jnvc583.github.io/vmsg/modal.js';</code></pre>
+                <p>然后，创建并打开弹窗：</p>
+                <pre><code lang="js">const m = new Modal({
+    title: '弹窗标题',
+    style: 'mac', // 可选，'mac' 风格窗口，默认是普通风格
+    html: '&lt;p&gt;弹窗内容&lt;/p&gt;', // 可以是字符串或 HTMLElement
+    footer: [ // 可选，定义底部按钮
+        { text: '关闭', className: '', onClick: () => m.close() },
+        { text: '确定', className: 'btn-primary', onClick: () => { alert('已确认'); m.close(); } }
+]});
+m.open();
+                </code></pre>
+                <h1>自定义样式表</h1>
+                <p>如果你想自定义样式，可以覆盖默认样式。例如：</p>
+                <pre><code lang="css">.modal-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}</code></pre>
+                <p>这样可以自定义遮罩层的背景色。</p>
+                <pre><code lang="css">.modal-dialog {
+    background: rgb(100, 100, 100);
+}</code></pre>
+                <p>这样可以自定义弹窗对话框的背景色。</p>
+                <pre><code lang="css">.btn-primary {
+                    background: rgb(100, 150, 250);
+                }</code></pre>
+                <p>这样可以自定义主要按钮的背景色。</p>
+            </div>
+        </main>
+        <footer>
+            <p>vmsg Version: 1.00</p>
+            <p>Veyland &copy; 2023~2026 All rights reserved.</p>
+            <p>Contributor: <a href="https://github.com/jnvc583/">jnvc583</a></p>
+        </footer>
+    </div>
+    <script type="module">
+        import Modal from './modal.js';
+
+        const openBasic = document.getElementById('open-basic');
+        const openMac = document.getElementById('open-mac');
+        const openMacForm = document.getElementById('open-mac-form');
+
+        openBasic.addEventListener('click', () => {
+            const m = new Modal({
+                title: '基本弹窗',
+                html: `<p>这是一个基础弹窗（模块版）。支持焦点锁定、Esc 关闭与点击遮罩关闭。</p>`,
+                footer: [
+                    { text: '关闭', className: '', onClick: () => m.close() },
+                    { text: '确定', className: 'btn-primary', onClick: () => { alert('已确认'); m.close(); } }
+                ]
+            });
+            m.open();
+        });
+
+        openMac.addEventListener('click', () => {
+            const m = new Modal({
+                title: 'Mac 风格窗口（可拖拽）',
+                style: 'mac',
+                html: `<p>这是一个模仿 macOS 窗口样式的弹窗，左上角有三个按钮。你可以拖动标题栏来移动窗口。</p>`,
+                footer: [
+                    { text: '关闭', className: '', onClick: () => m.close() },
+                    { text: '保存', className: 'btn-primary', onClick: () => { alert('已保存'); m.close(); } }
+                ]
+            });
+            m.open();
+        });
+
+        openMacForm.addEventListener('click', () => {
+            const form = document.createElement('form');
+            form.innerHTML = `
+            <label style="display:block;margin-bottom:8px">
+              名称<br/>
+              <input name="name" required style="width:100%;padding:8px;margin-top:4px"/>
+            </label>
+          `;
+            const m = new Modal({
+                title: '可拖拽表单（Mac）',
+                style: 'mac',
+                html: form,
+                footer: [
+                    { text: '最小化到 Dock', className: '', onClick: () => m.minimize() },
+                    {
+                        text: '提交', className: 'btn-primary', onClick: () => {
+                            const fd = new FormData(form);
+                            const name = fd.get('name');
+                            if (!name) { alert('请填写名称'); return; }
+                            alert('提交成功: ' + name);
+                            m.close();
+                        }
+                    }
+                ]
+            });
+            m.open();
+        });
+    </script>
+
+</body>
+
+</html>
